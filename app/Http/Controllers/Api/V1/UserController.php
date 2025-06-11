@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -32,7 +33,7 @@ try {
         $data = $request->validated();
         
         // Debug: ver qué datos llegan
-        \Log::info('Datos validados:', $data);
+        Log::info('Datos validados:', $data);
         
         // Hash la contraseña si existe
         if (isset($data['password'])) {
@@ -40,19 +41,19 @@ try {
         }
         
         // Debug: ver qué datos se van a crear
-        \Log::info('Datos para crear:', $data);
+        Log::info('Datos para crear:', $data);
         
         $user = User::create($data);
         
         // Debug: ver si se creó el usuario
-        \Log::info('Usuario creado:', $user->toArray());
+        Log::info('Usuario creado:', $user->toArray());
 
         return response()->json(new UserResource($user));
         
     } catch (\Exception $e) {
         // Capturar cualquier error
-        \Log::error('Error creando usuario: ' . $e->getMessage());
-        \Log::error('Stack trace: ' . $e->getTraceAsString());
+        Log::error('Error creando usuario: ' . $e->getMessage());
+        Log::error('Stack trace: ' . $e->getTraceAsString());
         
         return response()->json([
             'error' => 'Error creando usuario',

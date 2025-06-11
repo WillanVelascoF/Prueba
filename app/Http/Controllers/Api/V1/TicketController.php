@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TicketResource;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -65,7 +66,7 @@ class TicketController extends Controller
         
         try {
         // Debug: Verificar qué datos llegan
-        \Log::info('updateStatus called', [
+        Log::info('updateStatus called', [
             'id' => $id,
             'request_data' => $request->all(),
             'status' => $request->status
@@ -74,7 +75,7 @@ class TicketController extends Controller
         $ticket = Ticket::findOrFail($id);
         
         // Debug: Verificar que se encuentra el ticket
-        \Log::info('Ticket found', [
+        Log::info('Ticket found', [
             'ticket_id' => $ticket->id,
             'current_status' => $ticket->status
         ]);
@@ -82,15 +83,15 @@ class TicketController extends Controller
         $updateData = ['status' => $request->status];
         
         // Debug: Verificar datos a actualizar
-        \Log::info('Update data', $updateData);
+        Log::info('Update data', $updateData);
         
         // Verificar que el campo status esté en $fillable
-        \Log::info('Ticket fillable fields', $ticket->getFillable());
+        Log::info('Ticket fillable fields', $ticket->getFillable());
         
         $result = $ticket->update($updateData);
         
         // Debug: Verificar si la actualización fue exitosa
-        \Log::info('Update result', [
+        Log::info('Update result', [
             'success' => $result,
             'new_status' => $ticket->fresh()->status
         ]);
@@ -99,21 +100,20 @@ class TicketController extends Controller
             'message' => 'Status updated successfully',
             'data' => [
                 'id' => $ticket->id,
-                'old_status' => $ticket->getOriginal('status'),
                 'new_status' => $ticket->status,
                 'update_result' => $result
             ]
         ]);
         
     } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        \Log::error('Ticket not found', ['id' => $id]);
+        Log::error('Ticket not found', ['id' => $id]);
         return response()->json([
             'error' => 'Ticket no encontrado',
             'message' => 'El ticket con ID ' . $id . ' no existe'
         ], 404);
         
     } catch (\Exception $e) {
-        \Log::error('Error updating ticket status', [
+        Log::error('Error updating ticket status', [
             'id' => $id,
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString()
