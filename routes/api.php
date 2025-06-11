@@ -15,6 +15,7 @@ Route::get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1', 'namespace' => 'app\Http\Controllers\Api\V1'], function () {
     Route::post('/users', [UserController::class, 'store']);
     Route::get('/users/index', [UserController::class, 'index']);
+    Route::get('/users/{id}', [UserController::class, 'getUserById']);
 
     Route::post('/tickets', [TicketController::class, 'store']);
     Route::get('/tickets/index', [TicketController::class, 'index']);

@@ -24,6 +24,28 @@ class UserController extends Controller
         return UserResource::collection($users);
     }
 
+    public function getUserById(int $id): JsonResponse
+    {
+        try {
+            $user = User::findOrFail($id);
+            
+            return response()->json(new UserResource($user));
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Usuario no encontrado',
+                'message' => "No se encontró el usuario con ID: {$id}"
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo usuario: ' . $e->getMessage());
+            
+            return response()->json([
+                'error' => 'Error interno del servidor',
+                'message' => 'Ocurrió un error al obtener el usuario'
+            ], 500);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
